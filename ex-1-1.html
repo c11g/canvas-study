@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+	<meta charset="utf-8">
+	<title>Hello Canvas</title>
+	<style>
+		body{
+			background-color:#ddd;
+		}
+		#canvas{
+			margin:10px;
+			padding:10px;
+			background-color:#fff;
+			border:1px solid #aaa;
+		}
+		#canvas2{
+			width:600px;
+			height:300px;
+			margin:10px;
+			padding:10px;
+			background-color:#fff;
+			border:1px solid #aaa;
+		}
+	</style>
+</head>
+<body>
+	<p>canvas사이즈를 width,height 속성을 사용해 설정</p>
+	<canvas id="canvas" width="600" height="300">
+		캔버스를 지원하지 않습니다.
+	</canvas>
+	<hr>
+	<p>canvas사이즈를 css의 width,height를 사용해서 설정</p>
+	<canvas id="canvas2">
+		캔버스를 지원하지 않습니다.
+	</canvas>
+<script>
+	var canvas = document.getElementById('canvas'),
+		context = canvas.getContext('2d');
+
+		context.font = '38pt Arial';
+		context.fillStyle = 'cornflowerblue';
+		context.strokeStyle = 'blue';
+
+		context.fillText('Hello Canvas',canvas.width/2-150,canvas.height/2+15);
+		context.strokeText('Hello Canvas',canvas.width/2-150,canvas.height/2+15);
+
+	var canvas2 = document.getElementById('canvas2'),
+		context2 = canvas2.getContext('2d');
+
+		context2.font = '38pt Arial';
+		context2.fillStyle = 'cornflowerblue';
+		context2.strokeStyle = 'blue';
+
+		context2.fillText('Hello Canvas2',canvas2.width/2-150,canvas2.height/2+15);
+		context2.strokeText('Hello Canvas2',canvas2.width/2-150,canvas2.height/2+15);
+</script>
+</body>
+</html>
