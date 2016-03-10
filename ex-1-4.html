@@ -22,9 +22,10 @@
 		hand_radius = radius + numeral_spacing;
 
 	function drawCircle(){
+		context.fillStyle = 'red';
 		context.beginPath();
 		context.arc(canvas.width/2, canvas.height/2, radius, 0, Math.PI*2, true);
-		context.stroke();
+		context.fill();
 	}
 	function drawNumerals() {
 		var numerals = [1, 2, 3, 4, 5, 6, 7, ,8 ,9, 10, 11, 12],
@@ -51,6 +52,8 @@
 				? radius - hand_truncation - hour_hand_truncation
 				: radius - hand_truncation;
 
+		context.strokeStyle = 'white';
+		context.lineWidth = '5';
 		context.moveTo(canvas.width/2, canvas.height/2);
 		context.lineTo(canvas.width/2 + Math.cos(angle)*handRadius, canvas.height/2 + Math.sin(angle)*handRadius);
 		context.stroke();
