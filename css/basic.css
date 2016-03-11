@@ -1,0 +1,9 @@
+@charset "utf-8";
+body{
+	background-color:#ddd;
+}
+#canvas{
+	margin:10px;
+	background-color:#fff;
+	border:1px solid #aaa;
+}

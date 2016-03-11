@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+	<meta charset="utf-8">
+	<title>직사각형그리기</title>
+	<link rel="stylesheet" href="css/basic.css">
+</head>
+<body>
+	<canvas id="canvas" width="600" height="400">
+		캔버스를 지원하지 않습니다.
+	</canvas>
+
+<script>
+	var canvas = document.getElementById('canvas'),
+		context = canvas.getContext('2d');
+
+		context.lineJoin = 'round';
+		context.lineWidth = 30;
+
+		context.font = '24px Helvetica';
+		context.fillText('Click anywhere to erase', 175, 40);
+
+		context.strokeRect(75, 100, 200, 200);
+		context.fillRect(325, 100, 200, 200);
+
+		context.canvas.onmousedown = function(e){
+			context.clearRect(0, 0, canvas.width, canvas.height);
+		}
+</script>
+</body>
+</html>

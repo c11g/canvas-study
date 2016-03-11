@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+	<meta charset="utf-8">
+	<title>패턴사용하기</title>
+	<link rel="stylesheet" href="css/basic.css">
+</head>
+<body>
+	<div id="radios">
+		<input type="radio" name="pattern" id="repeat-radio" checked><label for="repeat-radio">repeat</label>
+		<input type="radio" name="pattern" id="repeat-x-radio"><label for="repeat-x-radio">repeat x</label>
+		<input type="radio" name="pattern" id="repeat-y-radio"><label for="repeat-y-radio">repeat y</label>
+		<input type="radio" name="pattern" id="no-repeat-radio"><label for="no-repeat-radio">no-repeat</label>
+	</div>
+
+	<canvas id="canvas" width="600" height="400">
+		캔버스를 지원하지 않습니다.
+	</canvas>
+
+<script>
+	var canvas = document.getElementById('canvas'),
+		context = canvas.getContext('2d');
+
+	var repeatRadio = document.getElementById('repeat-radio'),
+		repeatXRadio = document.getElementById('repeat-x-radio'),
+		repeatYRadio = document.getElementById('repeat-y-radio'),
+		noRpeatRadio = document.getElementById('no-repeat-radio'),
+		image = new Image();
+
+	function fillCanvasWithPattern(repeatString){
+		var pattern = context.createPattern(image, repeatString);
+
+		context.clearRect(0, 0, canvas.width, canvas.height);
+		context.fillStyle = pattern;
+		context.fillRect(0, 0, canvas.width, canvas.height);
+		context.fill();
+	}
+
+	repeatRadio.addEventListener('click', function(e){
+		fillCanvasWithPattern('repeat');
+	});
+	repeatXRadio.addEventListener('click', function(e){
+		fillCanvasWithPattern('repeat-x');	
+	});
+	repeatYRadio.addEventListener('click', function(e){
+		fillCanvasWithPattern('repeat-y');	
+	});
+	noRpeatRadio.addEventListener('click', function(e){
+		fillCanvasWithPattern('no-repeat');	
+	});
+
+	image.src = 'images/kimujung.jpg';
+	image.onload = function(e){
+		fillCanvasWithPattern('no-repeat');
+	}
+
+</script>
+</body>
+</html>
