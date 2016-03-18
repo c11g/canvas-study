@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+	<meta charset="utf-8">
+	<title>도형 컷아웃</title>
+	<link rel="stylesheet" href="css/basic.css">
+</head>
+<body>
+	<canvas id="canvas" width="900" height="600">
+		캔버스를 지원하지 않습니다.
+	</canvas>
+
+<script>
+	var canvas = document.getElementById('canvas'),
+		ct = canvas.getContext('2d');
+
+		ct.fillStyle = '#ab902c';
+		
+		ct.beginPath();
+		ct.rect(0, 0, canvas.width, canvas.height);
+		ct.arc(100, 100, 50, 0, 2*Math.PI, true);
+		rect2(400, 100, 100, 100);
+		triangle(100, 300, 300, 500, 500, 300);
+		ct.fill();
+		
+		ct.strokeStyle = 'red';
+
+		ct.beginPath();
+		ct.rect(0, 0, canvas.width, canvas.height);
+		ct.stroke();
+		ct.beginPath();
+		ct.arc(100, 100, 50, 0, 2*Math.PI, true);
+		rect2(400, 100, 100, 100);
+		triangle(100, 300, 300, 500, 500, 300);
+		ct.stroke();
+
+		function rect2(x, y, w, h){
+			ct.moveTo(x, y);
+			ct.lineTo(x, y+h);
+			ct.lineTo(x+w, y+h);
+			ct.lineTo(x+w, y);
+			ct.closePath();
+		}
+		function triangle(x, y, x2, y2, x3, y3){
+			ct.moveTo(x, y);
+			ct.lineTo(x2, y2);
+			ct.lineTo(x3, y3);
+			ct.closePath();
+		}
+
+</script>
+</body>
+</html>

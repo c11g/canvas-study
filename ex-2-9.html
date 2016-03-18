@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+	<meta charset="utf-8">
+	<title>도형, 윤곽, 내부칠하기</title>
+	<link rel="stylesheet" href="css/basic.css">
+</head>
+<body>
+	<canvas id="canvas" width="600" height="600">
+		캔버스를 지원하지 않습니다.
+	</canvas>
+
+<script>
+	var context = document.getElementById('canvas').getContext('2d');
+
+	context.font = '40px Arial';
+	context.strokeStyle = 'red';
+	context.fillStyle = 'gray';
+
+	context.strokeText('Stroke', 10, 50);
+
+	context.fillText('Fill', 200, 50);
+
+	context.strokeText('StrokeFill', 400, 50);
+	context.fillText('StrokeFill', 400, 50);
+
+	context.lineWidth = 5;
+	
+	context.strokeRect(10,100,100,50);
+	context.fillRect(200,100,100,50);
+	context.strokeRect(400,100,100,50);
+	context.fillRect(400,100,100,50);
+
+	context.beginPath();
+	context.arc(60,250,50,0,3*Math.PI/2);
+	context.stroke();
+
+	context.beginPath();
+	context.arc(260,250,50,0,3*Math.PI/2);
+	context.fill();
+
+	context.beginPath();
+	context.arc(460,250,50,0,3*Math.PI/2);
+	context.fill();
+	context.stroke();
+
+	context.beginPath();
+	context.arc(60,400,50,0,3*Math.PI/2);
+	context.closePath();
+	context.stroke();
+
+	context.beginPath();
+	context.arc(260,400,50,0,3*Math.PI/2);
+	context.closePath();
+	context.fill();
+
+	context.beginPath();
+	context.arc(460,400,50,0,3*Math.PI/2);
+	context.closePath();
+	context.fill();
+	context.stroke();
+
+</script>
+</body>
+</html>

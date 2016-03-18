@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+	<meta charset="utf-8">
+	<title>원 컷아웃</title>
+	<link rel="stylesheet" href="css/basic.css">
+</head>
+<body>
+	<canvas id="canvas" width="600" height="600">
+		캔버스를 지원하지 않습니다.
+	</canvas>
+
+<script>
+	var canvas = document.getElementById('canvas'),
+		ct = canvas.getContext('2d');
+
+		ct.fillStyle = 'rgba(100,140,230,0.5)';
+		ct.strokeStyle = ct.fillStyle;
+
+		ct.beginPath();
+		ct.arc(300, 300, 200, 0, 2*Math.PI, false);
+		ct.arc(300, 300, 150, 0, 2*Math.PI, true);
+
+		ct.shadowColor = 'rgba(0, 0, 0, 0.8)';
+		ct.shadowOffsetX = 12;
+		ct.shadowOffsetY = 12;
+		ct.shadowBlur = 15;
+
+		ct.stroke();
+		ct.fill();
+</script>
+</body>
+</html>
