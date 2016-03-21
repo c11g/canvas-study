@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+	<meta charset="utf-8">
+	<link rel="stylesheet" href="css/basic.css">
+	<title>격자 그리기</title>
+</head>
+<body>
+	<canvas id="canvas" width="800" height="600">캔버스를 지원하지 않습니다.</canvas>
+	<button type="button" id="line-half">lineWidth = 0.5</button><button type="button" id="line-one">lineWidth = 1</button>
+	<p>
+		lineWidth 값(픽셀)을 0.5 나 1 로 설정했을시 모두 1px로 나타나지만,<br>
+		0.5로 설정했을때는 지정한 컬러보다 흐리게 나온다. 책에서는 브라우저가 안티앨리어싱을 사용한다고 되어있다.<br>
+		1 로 선언시 지정한 컬러로 정확하게 나타난다.
+	</p>
+<script>
+	var canvas = document.getElementById('canvas'),
+		context = canvas.getContext('2d');
+
+		
+		function drawGrid(lineWidth){
+
+			context.clearRect(0, 0, canvas.width, canvas.height);
+			context.lineWidth = lineWidth;
+
+			for( var i = 9.5; i < canvas.width; i += 10 ){
+				context.strokeStyle = '#ddd';
+				context.beginPath();
+				context.moveTo(i, 0);
+				context.lineTo(i, canvas.height/3);
+				context.stroke();
+
+				context.strokeStyle = '#00f';
+				context.beginPath();
+				context.moveTo(i, canvas.height/3);
+				context.lineTo(i, 2*canvas.height/3);
+				context.stroke();
+
+				context.strokeStyle = '#f00';
+				context.beginPath();
+				context.moveTo(i, 2*canvas.height/3);
+				context.lineTo(i, canvas.height);
+				context.stroke();
+			}
+
+			for( var i = 9.5; i < canvas.height; i += 10 ){
+				if ( i < canvas.height/3 ){
+					context.strokeStyle = '#ddd';
+				} else if ( i < 2*canvas.height/3 ) {
+					context.strokeStyle = '#00f';
+				} else {
+					context.strokeStyle = '#f00';
+				}
+				context.beginPath();
+				context.moveTo(0, i);
+				context.lineTo(canvas.width, i);
+				context.stroke();
+			}
+		}
+
+
+	window.onload = function(){
+		document.getElementById('line-half').addEventListener('click', function(){
+			drawGrid('0.5');
+		});
+		document.getElementById('line-one').addEventListener('click', function(){
+			drawGrid('1');
+		});
+	}
+</script>
+</body>
+</html>

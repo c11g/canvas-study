@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+	<meta charset="utf-8">
+	<link rel="stylesheet" href="css/basic.css">
+	<title>축 그리기</title>
+</head>
+<body>
+	<canvas id="canvas" width="800" height="600">캔버스를 지원하지 않습니다.</canvas>
+	<h1>축 그리기</h1>
+<script>
+	var canvas = document.getElementById('canvas'),
+		context = canvas.getContext('2d');
+
+	// 그리드
+	function drawGrid(){
+		context.lineWidth = 0.5;
+		context.strokeStyle = '#ddd';
+
+		for( var i = 9.5; i < canvas.width; i += 10 ){
+			context.beginPath();
+			context.moveTo(i, 0);
+			context.lineTo(i, canvas.height);
+			context.stroke();
+		}
+
+		for( var i = 9.5; i < canvas.height; i += 10 ){
+			context.beginPath();
+			context.moveTo(0, i);
+			context.lineTo(canvas.width, i);
+			context.stroke();
+		}
+	}
+	var margin = 40;
+
+	// x축
+	function axisX(color, lineWidth){
+		context.lineWidth = lineWidth;
+		context.strokeStyle = color;
+		
+		context.beginPath();
+		context.moveTo(margin, canvas.height - margin);
+		context.lineTo(canvas.width - margin, canvas.height - margin);
+		context.stroke();
+	}
+	
+	// y축
+	function axisY(color, lineWidth){
+		context.lineWidth = lineWidth;
+		context.strokeStyle = color;
+		
+		context.beginPath();
+		context.moveTo(margin, canvas.height - margin);
+		context.lineTo(margin, margin);
+		context.stroke();
+	}
+
+	// tick X축
+	function drawTicksX(color, gap){
+		var numHorizontalTicks = (canvas.width - 2*margin) / gap,
+			tickSize;
+		
+		context.strokeStyle = color;
+
+		for(var i = 1, spacing = 0; i < numHorizontalTicks; i++){
+			context.beginPath();
+			
+			spacing += gap;
+			
+			if( i % 5 === 0) {
+				context.lineWidth = 1;
+				tickSize = 10;
+			} else {
+				context.lineWidth = 0.5;
+				tickSize = 5;
+			}
+			
+			context.moveTo(margin + spacing, canvas.height - margin - tickSize);
+			context.lineTo(margin + spacing, canvas.height - margin + tickSize);
+			context.stroke();
+		}
+	}
+
+	// tick Y축
+	function drawTicksY(color, gap){
+		var numVerticalTicks = (canvas.height - 2*margin) / gap,
+			tickSize;
+		
+		context.strokeStyle = color;
+
+		for(var i = 1, spacing = 0; i < numVerticalTicks; i++){
+			context.beginPath();
+			
+			spacing += 10;
+			
+			if( i % 5 === 0) {
+				context.lineWidth = 1;
+				tickSize = 10;
+			} else {
+				context.lineWidth = 0.5;
+				tickSize = 5;
+			}
+			
+			context.moveTo(margin - tickSize, canvas.height - margin - spacing);
+			context.lineTo(margin + tickSize, canvas.height - margin - spacing);
+			context.stroke();
+		}
+	}
+
+	// 실행
+	drawGrid();
+	axisX('navy', 1);
+	axisY('navy', 1);
+	drawTicksX('#ff0000', 10);
+	drawTicksY('#ff0000', 10);
+
+</script>
+</body>
+</html>

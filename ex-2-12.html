@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+	<meta charset="utf-8">
+	<link rel="stylesheet" href="css/basic.css">
+	<title>선 그리기</title>
+</head>
+<body>
+	<canvas id="canvas" width="600" height="300">캔버스를 지원하지 않습니다.</canvas>
+	<h1>선 그리기</h1>
+	<p>1px짜리 선을 그릴때는 좌표를 0.5에 걸어야 한다. 캔버스에서 선을 그릴때는 좌표를 기준으로 좌우에 동일한 폭으로 선을 그리기 때문인데, 만일 10의 좌표에 1px 짜리 선을 그린다고 하면 브라우저는 9.5 ~ 10.5의 영역에 선을 그리게 되며 결국 이는 9~10픽셀에 위치한 2px 짜리 선으로 나타나게 된다. 반대로 10.5 좌표에 선을 그리게 되면, 10 ~ 11픽셀에 위치한 1px짜리 선이 나타난다.</p>
+	<p>컷아웃에서 확인했듯이, moveTo 메소드는 서브패스의 선을 끊어서 새로운 시작점(?)을 만든다. 그렇기 때문에 위 예제 소스에서 위에 선을 그리고 beginPath 후에 아래 선을 그리는 것과 beginPath없이 moveTo로 바로 그리는것과 형태에서는 차이가 없다.</p>
+	<p>하지만 beginPath없이 moveTo로 그리게 되면 서브패스들을 지우지 않기 때문에, stroke 메소드를 실행하게 되면 기존 서브패스들까지 같이 선이 칠해지게 된다. 위아래 선의 스타일을 구분할수가 없다. 설령 위에선을 그리고 바로 stroke를 하더라도 아래에서 beginPath가 없으면 이전 서브패스까지 같이 stroke 하기 때문에 덧칠하는 형태가 된다.</p>
+<script>
+	var canvas = document.getElementById('canvas'),
+		context = canvas.getContext('2d');
+
+	context.lineWidth = 1;
+
+	context.beginPath();
+	context.moveTo(50.5, 50);
+	context.lineTo(450, 50);
+	context.stroke();
+
+	context.beginPath();
+	context.moveTo(50.5, 100.5);
+	context.lineTo(450.5, 100.5);
+	context.stroke();
+</script>
+</body>
+</html>

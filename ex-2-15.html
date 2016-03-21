@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+	<meta charset="utf-8">
+	<link rel="stylesheet" href="css/basic.css">
+	<title>러버밴드</title>
+</head>
+<body>
+	<canvas id="canvas" width="800" height="600">캔버스를 지원하지 않습니다.</canvas>
+	<div>
+		<label for="guideWire">guideWire:</label> <input type="checkbox" id="guideWire">
+	</div>
+	<h1>러버 밴드</h1>
+<script>
+	var canvas = document.getElementById('canvas'),
+		context = canvas.getContext('2d');
+
+	// grid
+	function drawGrid(lineWidth){
+
+		context.clearRect(0, 0, canvas.width, canvas.height);
+		context.lineWidth = lineWidth;
+
+		for( var i = 9.5; i < canvas.width; i += 10 ){
+			context.strokeStyle = '#ddd';
+			context.beginPath();
+			context.moveTo(i, 0);
+			context.lineTo(i, canvas.height);
+			context.stroke();
+		}
+
+		for( var i = 9.5; i < canvas.height; i += 10 ){
+			context.beginPath();
+			context.moveTo(0, i);
+			context.lineTo(canvas.width, i);
+			context.stroke();
+		}
+	}
+
+	// window to canvas
+	function windowToCanvas(x, y){
+		var box = canvas.getBoundingClientRect();
+		return {
+			'x': x - box.left,
+			'y': y - box.top
+		};
+	}
+
+	// save
+	var	 surfaceImage;
+	function saveSurface(){
+		surfaceImage = context.getImageData(0, 0, canvas.width, canvas.height);
+	}
+
+	// restore
+	function restoreSurface(){
+		context.putImageData(surfaceImage, 0, 0);
+	}
+	
+	// update rubberband
+	function updateRubberband(loc){
+		updateRubberbandRectangle(loc);
+		drawRubberbandShape(loc);
+	}
+
+	var rubberbandRect = {};
+	function updateRubberbandRectangle(loc){
+		rubberbandRect.width = Math.abs(loc.x - x1);
+		rubberbandRect.height = Math.abs(loc.y - y1);
+
+		if( loc.x > x1 ){
+			rubberbandRect.left = x1;
+		} else {
+			rubberbandRect.left = loc.x;
+		}
+
+		if( loc.y > y1 ){
+			rubberbandRect.top = y1;
+		} else {
+			rubberbandRect.top = loc.y;
+		}
+	}
+
+	function drawRubberbandShape(loc){
+		context.beginPath();
+		context.moveTo(x1, y1);
+		context.lineTo(loc.x, loc.y);
+		context.stroke();
+	}
+
+	// guideWire
+	function drawGuideWires(x, y){
+		context.save();
+		
+		context.strokeStyle = 'rgba(0, 0, 230, 0.4)';
+		context.lineWidth = 0.5;
+
+		context.beginPath();
+		context.moveTo(0, y + 0.5);
+		context.lineTo(canvas.width, y + 0.5);
+		context.stroke();
+
+		context.beginPath();
+		context.moveTo(x + 0.5, 0);
+		context.lineTo(x + 0.5, canvas.height);
+		context.stroke();
+		
+		context.restore();
+	}
+
+	// 컨트롤러
+	drawGrid(0.5);
+	
+	var drag, x1, y1, x2, y2, loc,
+		guideWire = document.getElementById('guideWire').checked;
+	
+	// guideWire
+	document.getElementById('guideWire').onchange = function(e){
+		guideWire = document.getElementById('guideWire').checked;
+	}
+
+	// 마우스 드래그를 위한 이벤트
+	canvas.onmousedown = function(e){
+		drag = true;
+		loc = windowToCanvas(e.clientX, e.clientY);
+		x1 = loc.x;
+		y1 = loc.y;
+
+		saveSurface();
+		
+		context.strokeStyle = '#000';
+		context.lineWidth = 2;
+	}
+	canvas.onmouseup = function(e){
+		drag = false;
+
+		loc = windowToCanvas(e.clientX, e.clientY);
+
+		restoreSurface();
+		updateRubberband(loc);
+	}
+
+	canvas.onmousemove = function(e){
+		
+		if( drag ){
+			loc = windowToCanvas(e.clientX, e.clientY);
+
+			restoreSurface();
+			updateRubberband(loc);
+
+
+			if( guideWire ){
+				drawGuideWires(loc.x, loc.y);
+			}
+		}
+		
+	}
+
+</script>
+</body>
+</html>
