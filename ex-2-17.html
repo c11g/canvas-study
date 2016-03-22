@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+	<meta charset="utf-8">
+	<title>점선 그리기</title>
+	<link rel="stylesheet" href="css/basic.css">
+</head>
+<body>
+	<canvas id="canvas" width="800" height="600">
+		캔버스를 지원하지 않습니다.
+	</canvas>
+	<h1>점선그리기</h1>
+	<p>deltaX /deltaY는 두 점사이의 거리를 나타낸다. 두 점사이의 거리를 dashLength로 나누면 들어가야할 점선의 갯수가 나온다.<br>문제는 두 점사이의 거리를 구하는것인데, 이것이 수평선 또는 수직선이라면 두 점의 좌표를 빼버리면 그만이지만,<br>대각선으로 이루어진 선의 거리를 구하기는 쉽지 않다.</p>
+	<p>Math.sqrt를 이용한 수식은 바로 피타고라스였다! 직각삼각형의 직각을 끼고 있는 두 변의 제곱의 합은 빗변의 제곱의 합과 같다! a²+ b²= c²!</p>
+	<p>피타고라스의 정리를 이용해서 두 점을 잇는 선을 빗변으로 하는 직각삼각형을 그려보자! 그렇게 되면 저 수식이 이해가 간다.</p>
+	<p>이제는 선에 들어가야할 점선의 갯수가 나왔다. 하지만 어떤식으로 반복시켜야 될까? 그렇다!</p>
+	<p>한번은 moveTo점선 갯수 % 2 === 0 연산자를 이용해서 번갈아가면서 실행되도록 하고, moveTo / lineTo를 호출해서 그린다.<br>그릴때 좌표 부분의 수식은 아직 이해하지 못했다. ( x1 + ( deltaX / numDashes ) * i, y1 + ( deltaY / numDashes ) * i )</p>
+	<p>여기서 기본 자바스크립트에서 프로퍼티에 접근하는 방법이 두가지가 있는데, object.property 와 object[property] 중 지금까지는 . 을 이용해서 접근했지만, 여기서는 삼항연산자를 이용해서 값을 변경해야 하기 때문에 [] 방법으로 접근했다. 아래에 그에 대한 내용을 검색해서 퍼왔다.</p>
+	<blockquote>
+		<i>
+		객체의 프로퍼티에 접근하는 방법에는 크게 2가지가 있다.<br>"." 연산자를 이용하던가 "[]"를 이용하는 것이다. 예를들면 다음과 같다.<br>
+		object.property;<br>
+		object['property'];<br>
+		object.method();<br>
+		object['method']();<br>
+		장단점이 있겠지만 "."를 사용하는게 간단하고 보통 그렇게 사용하고 있다. 하지만 "[]"를 이용함면 프로퍼티명을 id와 같은 텍스트로 선택할 수 있다. 별로 사용할 일은 없겠지만, 생각하기에 따라 여러가지 확장성을 고려해서 작업이 가능하게 되겠다.
+		</i>
+	</blockquote>
+	<h1>lineCap / lineJoin</h1>
+<script>
+	var context = document.getElementById('canvas').getContext('2d');
+
+	function drawDashedLine(x1, y1, x2, y2, dashLength){
+		dashLength = dashLength === undefined
+			? 5
+			: dashLength;
+
+		var deltaX = x2 - x1,
+			deltaY = y2 - y1;
+
+		var numDashes = Math.floor( Math.sqrt( deltaX * deltaX + deltaY * deltaY) / dashLength );
+		
+		for ( var i = 0; i < numDashes; i++ ) {
+			context[ i % 2 === 0 ? 'moveTo' : 'lineTo' ]( x1 + ( deltaX / numDashes ) * i, y1 + ( deltaY / numDashes ) * i );
+		}
+		context.stroke();
+	}
+
+	context.lineWidth = 3;
+
+	drawDashedLine(10, 10, 200, 50, 10);
+	drawDashedLine(300, 50, 600, 50, 5);
+
+	context.lineWidth = 20;
+	
+	context.strokeStyle = '#6554ff';
+	context.lineJoin = 'miter'; // 기본값
+	context.beginPath();
+	context.moveTo(10, 200);
+	context.lineTo(200, 200);
+	context.lineTo(200, 250);
+	context.stroke();
+
+	context.strokeStyle = '#37951c';
+	context.lineJoin = 'bevel';
+	context.beginPath();
+	context.moveTo(10, 300);
+	context.lineTo(200, 300);
+	context.lineTo(200, 350);
+	context.stroke();
+
+	context.strokeStyle = '#b8711c';
+	context.lineJoin = 'round';
+	context.beginPath();
+	context.moveTo(10, 400);
+	context.lineTo(200, 400);
+	context.lineTo(200, 450);
+	context.stroke();
+
+	context.strokeStyle = '#6554ff';
+	context.lineCap = 'butt'; // 기본값
+	context.beginPath();
+	context.moveTo(400, 200);
+	context.lineTo(600, 200);
+	context.stroke();
+
+	context.strokeStyle = '#37951c';
+	context.lineCap = 'round';
+	context.beginPath();
+	context.moveTo(400, 300);
+	context.lineTo(600, 300);
+	context.stroke();
+	
+	context.strokeStyle = '#b8711c';
+	context.lineCap = 'square';
+	context.beginPath();
+	context.moveTo(400, 400);
+	context.lineTo(600, 400);
+	context.stroke();
+
+	// lineCap / lineJoin
+	context.lineWidth = 0.5;
+	context.strokeStyle = '#f00';
+	context.beginPath();
+	context.moveTo(10, 0);
+	context.lineTo(10, canvas.height);
+	context.moveTo(200, 0);
+	context.lineTo(200, canvas.height);
+	context.moveTo(400, 0);
+	context.lineTo(400, canvas.height);
+	context.moveTo(600, 0);
+	context.lineTo(600, canvas.height);
+	context.moveTo(0, 200);
+	context.lineTo(canvas.width, 200);
+	context.moveTo(0, 300);
+	context.lineTo(canvas.width, 300);
+	context.moveTo(0, 400);
+	context.lineTo(canvas.width, 400);
+	context.stroke();
+
+	context.font = '20px arial'
+	context.fillText('x: 10',10,480);
+	context.fillText('x: 200',200,480);
+	context.fillText('x: 400',400,480);
+	context.fillText('x: 600',600,480);
+	context.fillText('y: 200',280,220);
+	context.fillText('y: 300',280,320);
+	context.fillText('y: 400',280,420);
+	context.fillText('lineWidth: 20',20,120);
+	context.fillText('miter(기본값) - bevel - round 순     vs      butt(기본값) - round - sqaure',20,160);
+	
+</script>
+</body>
+</html>
