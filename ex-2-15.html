@@ -11,6 +11,10 @@
 		<label for="guideWire">guideWire:</label> <input type="checkbox" id="guideWire">
 	</div>
 	<h1>러버 밴드</h1>
+	<p>2가지 포인트가 있는데,<br>1. 캔버스에서 마우스 좌표를 계산,<br>2. mousemove시에 커서에 라인이 따라붙게 하는것과 가이드라인이 커서에 맞춰 움직이게 하는것</p>
+	<p>1. 마우스 좌표는 기본 자바스크립트가 제공하는 브라우저 내의 마우스 위치를 추적하는 e.clientX / e.clientY 를 활용,<br>그 좌표에서 캔버스의 offset 위치를 뺌, 캔버스의 offset은 getBoundingClientRect().top | left | right | bottom | width | height</p>
+	<p>2. 커서가 움직임에 따라 선이 변하게끔 하는것은 정확히 이해한것은 아니고 감으로만 이해했다.<br>save() / restore()를 이용하는데, 여기서는 우선 마우스를 클릭했을때 save를 해놓는다. 기존에 그려진 라인들에 추가로 라인을 그리기 때문<br>mousemove시에 클릭지점과 커서의 좌표를 계산해서 계속 실시간으로 라인을 그린다. 이게 핵심! 라인은 계속 그리고 있다.<br>단지, restore도 같이 계속 호출하기(그리는 것보다 먼저 호출되어야 한다. restore - drawing 순서로) 때문에,<br>마우스 클릭 이전의 화면으로 되돌리면서 mousemove시에 계속 생성되었던 동적인 라인들은 다 지워지게 되고 마치 라인이 움직이는것과 같은 효과가 난다.<br>
+	mouseup일때는 mousemove에서 계속적으로 반복했던 restore - drwaing을 한번 해주면서 라인을 마무리 한다.<br>mousemove시에 호출되는 restore와 drwaing 함수의 순서를 바꾸거나 주석처리 후 테스트를 하면 좀 더 이해하기 쉽다.</p>
 <script>
 	var canvas = document.getElementById('canvas'),
 		context = canvas.getContext('2d');
@@ -148,14 +152,12 @@
 			restoreSurface();
 			updateRubberband(loc);
 
-
 			if( guideWire ){
 				drawGuideWires(loc.x, loc.y);
 			}
 		}
 		
 	}
-
 </script>
 </body>
 </html>
