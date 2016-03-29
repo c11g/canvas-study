@@ -107,6 +107,7 @@
 		context.strokeStyle = inputStrokeStyle.value || '#961212';
 		context.fillStyle = inputFillStyle.value || '#4366a4';
 		context.lineWidth = inputLineWidth.value || 1;
+		finishPos = {};
 	}
 
 	var drag = false,
@@ -136,7 +137,7 @@
 			startPos = window2canvas(e);
 		});
 
-		// 2. mousemove: restore + endPos 구하기 + drawArc()
+		// 2. mousemove: restore + finishPos 구하기 + drawArc()
 		canvas.addEventListener('mousemove', function(e){
 			if ( drag === true ) {
 				restoreSurface();
