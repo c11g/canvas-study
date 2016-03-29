@@ -98,13 +98,18 @@
 
 	context.beginPath();
 	context.moveTo(300, 200);
-	context.arcTo(450, 250, 300, 300, 0);
-	context.lineTo(300, 300)
-	context.moveTo(300, 200);
 	context.arcTo(450, 250, 300, 300, 30);
 	context.lineTo(300, 300)
 	context.stroke();
 
+	context.strokeStyle = '#7aebff';
+	context.beginPath();
+	context.moveTo(375, 225);
+	context.lineTo(450, 250);
+	context.lineTo(375, 275);
+	context.stroke();
+
+	context.strokeStyle = '#000';
 	radius = 20;
 	context.beginPath();
 	context.moveTo(50 + radius, 350);
@@ -124,13 +129,13 @@
 
 	context.fillText('** arcTo(200,250,50,300,30)', 50, 195);
 	context.fillText('1: 시작점(50,50)', 300, 195);
-	context.fillText('2: 중간점(200,250)', 450, 260);
+	context.fillText('2: 중간점(450,250)', 450, 260);
 	context.fillText('3: 끝점(50,300)', 300, 310);
 	context.fillText('r : 30', 350, 245);
 
 	context.beginPath();
 	context.moveTo(355,250);
-	context.arc(355, 250, 30, 0, 2*Math.PI);
+	context.arc(355, 250, 30, 1.2, 3*Math.PI/2);
 	context.stroke();
 </script>
 </body>
