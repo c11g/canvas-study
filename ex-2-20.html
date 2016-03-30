@@ -137,6 +137,30 @@
 	context.moveTo(355,250);
 	context.arc(355, 250, 30, 1.2, 3*Math.PI/2);
 	context.stroke();
+
+	context.beginPath();
+	context.moveTo(70, 340);
+	context.lineTo(70, 360);
+	context.stroke();
+	context.fillText('moveTo / arcTo', 50, 335);
+
+	context.beginPath();
+	context.moveTo(190, 370);
+	context.lineTo(210, 370);
+	context.stroke();
+	context.fillText('arcTo', 210, 360);
+
+	context.beginPath();
+	context.moveTo(180, 490);
+	context.lineTo(180, 510);
+	context.stroke();
+	context.fillText('arcTo', 180, 520);
+
+	context.beginPath();
+	context.moveTo(40, 480);
+	context.lineTo(60, 480);
+	context.stroke();
+	context.fillText('arcTo', 20, 490);
 </script>
 </body>
 </html>
