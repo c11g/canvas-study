@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+	<meta charset="utf-8">
+	<title>이차곡선</title>
+	<link rel="stylesheet" href="css/basic.css">
+	<script src="js/grid.js"></script>
+</head>
+<body>
+	<canvas id="canvas" width="600" height="600">
+		캔버스를 지원하지 않습니다.
+	</canvas>
+	<h1>이차곡선그리기</h1>
+	<p>quadraticCurveTo(제어점x,제어점y,기준점x,기준점y)</p>
+	<p>현재 패스의 시작점(1)에서 기준점(3)을 연결하는데, 제어점(2)을 보면서 일정한 비율로 곡선을 그린다.</p>
+<script>
+	'use strict';
+	var canvas = document.getElementById('canvas'),
+		context = canvas.getContext('2d');
+
+	// grid
+	drawGrid('rgba(0,0,0,0.1)','#b06f14');
+
+	context.fillStyle = '#862323';
+	context.strokeStyle = '#ff9b00';
+	context.shadowColor = 'rgba(50, 50, 50, 1)';
+	context.shadowOffsetX = 2;
+	context.shadowOffsetY = 2;
+	context.shadowBlur = 4;
+
+	context.lineWidth = 3;
+	context.lineCap = 'round';
+
+	context.beginPath();
+	context.moveTo(100, 50);
+	context.quadraticCurveTo(100, 150, 200, 150);
+	context.stroke();
+
+	context.lineWidth = 20;
+	context.beginPath();
+	context.moveTo(200, 250);
+	context.quadraticCurveTo(220, 250, 240, 270);
+	context.quadraticCurveTo(260, 370, 290, 280);
+	context.quadraticCurveTo(310, 220, 370, 190);
+	context.stroke();
+
+	context.shadowColor = 'rgba(255,255,255,0)';
+	context.beginPath();
+	context.arc(100,50,3,0,2*Math.PI);
+	context.fill();
+	context.fillText('(1) 현재패스의 시작점',70,40);
+
+	context.beginPath();
+	context.arc(100,150,3,0,2*Math.PI);
+	context.fill();
+	context.fillText('(2) 제어점',50,150);
+	
+	context.beginPath();
+	context.arc(200,150,3,0,2*Math.PI);
+	context.fill();
+	context.fillText('(3) 기준점',210,150);
+	
+</script>
+</body>
+</html>
