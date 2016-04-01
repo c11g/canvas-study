@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+	<meta charset="utf-8">
+	<title>오목</title>
+	<style>
+	body{
+		margin:0;
+		padding:0;
+		background-color:#ddd;
+	}
+	#canvas{
+		background-color:#fff;
+	}
+	</style>
+</head>
+<body>
+	<canvas id="canvas" width="1200" height="1200">
+		캔버스를 지원하지 않습니다.
+	</canvas>
+<script src="js/common.js"></script>
+<script>
+	var badukSetting = {
+		'boardColor': '#f0c964',
+		'lineColor': '#000',
+		'columnGap': 50,
+		'margin': 20,
+		'padding': 20
+	}
+	function init(){
+		drawBadukBoard();
+	}
+	function drawBadukBoard(){
+		// 바둑판 스타일
+		context.fillStyle = badukSetting['boardColor'];
+		context.strokeStyle = '#a99153';
+		context.lineWidth = 0.5;
+		context.shadowColor = 'rgba(0, 0, 0, 0.5)';
+		context.shadowOffsetX = 4;
+		context.shadowOffsetY = 4;
+		context.shadowBlur = 20;
+
+		var boardSize = badukSetting['columnGap'] * 18,
+			boardOffset = badukSetting['margin'] + badukSetting['padding'];
+
+		context.beginPath();
+		context.rect(badukSetting['margin'], badukSetting['margin'], boardSize + badukSetting['padding'] * 2, boardSize + badukSetting['padding'] * 2);
+		context.fill();
+		context.stroke();
+
+		// 바둑판 선 스타일
+		context.strokeStyle = '#000';
+		context.lineWidth = 1;
+
+		context.beginPath();
+		var i = 0, gap = 0;
+		while ( i < 19) {
+			context.moveTo(boardOffset, boardOffset + gap);
+			context.lineTo(boardOffset + boardSize, boardOffset + gap);
+			i = i + 1;
+			gap = gap + badukSetting['columnGap'];
+		}
+		context.stroke();
+
+		context.beginPath();
+		var i = 0, gap = 0;
+		while ( i < 19) {
+			context.moveTo(boardOffset + gap, boardOffset);
+			context.lineTo(boardOffset + gap, boardOffset + boardSize);
+			i = i + 1;
+			gap = gap + badukSetting['columnGap'];
+		}
+		context.stroke();
+
+		context.fillStyle = '#000';
+		context.shadowColor = 'rgba(255, 255, 255, 0)';
+		context.beginPath();
+
+		for (var idX = 3; idX < 18; ) {
+			for (idY = 3; idY < 18; ) {
+				drawArc(badukSetting['columnGap'] * idX + boardOffset, badukSetting['columnGap'] * idY + boardOffset, 5, 'fill');
+				idY += 6;
+			}
+			idX += 6;
+		}
+	}
+	init();
+</script>
+</body>
+</html>
