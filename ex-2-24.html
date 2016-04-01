@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+	<meta charset="utf-8">
+	<title>다항곡선</title>
+	<link rel="stylesheet" href="css/basic.css">
+</head>
+<body>
+	<canvas id="canvas" width="600" height="600">
+		캔버스를 지원하지 않습니다.
+	</canvas>
+	<h1>다항곡선 그리기</h1>
+	<p>bezierCurveTo(제어점1x,제어점1y,제어점2x,제어점2y,기준점x,기준점y)</p>
+<script src="js/common.js"></script>
+<script>
+	var endPoints = [ {'x': 130, 'y': 70}, {'x': 430, 'y': 270} ],
+		controlPoints = [ {'x': 130, 'y': 250}, {'x': 450, 'y': 70} ];
+
+	function init () {
+		context.clearRect(0,0,canvas.width,canvas.height);
+
+		drawGrid('rgba(0,0,0,0.1)','#b06f14');
+
+		drawEndPoints();
+		drawControlPoints();
+
+		context.strokeStyle = 'blue';
+
+		context.beginPath();
+		context.moveTo(endPoints[0].x, endPoints[0].y);
+		drawCurveTo(controlPoints[0].x, controlPoints[0].y, controlPoints[1].x, controlPoints[1].y, endPoints[1].x, endPoints[1].y);
+		context.stroke();
+	}
+
+	function drawControlPoints(){
+		context.fillStyle = 'green';
+		context.beginPath();
+		drawArc(controlPoints[0].x, controlPoints[0].y, 5, 'fill');
+		drawArc(controlPoints[1].x, controlPoints[1].y, 5, 'fill');
+	}
+
+	function drawEndPoints(){
+		context.fillStyle = 'red';
+		context.beginPath();
+		drawArc(endPoints[0].x, endPoints[0].y, 5, 'fill');
+		drawArc(endPoints[1].x, endPoints[1].y, 5, 'fill');
+	}
+
+	init();
+
+	var drag = false,
+		mousedown = {},
+		currentMouse = {},
+		point1, point2;
+
+	canvas.addEventListener('mousedown',function(e){
+		mousedown = window2canvas(e);
+		if ( mousedown.x > controlPoints[0].x - 5 && mousedown.x < controlPoints[0].x + 5 && mousedown.y > controlPoints[0].y - 5 && mousedown.y < controlPoints[0].y + 5 ) {
+			drag = true;
+			point1 = true;
+		} else if ( mousedown.x > controlPoints[1].x - 5 && mousedown.x < controlPoints[1].x + 5 && mousedown.y > controlPoints[1].y - 5 && mousedown.y < controlPoints[1].y + 5 ) {
+			drag = true;
+			point2 = true;
+		}
+	});
+	canvas.addEventListener('mousemove',function(e){
+		if ( drag ) {
+			currentMouse = window2canvas(e);
+
+			if ( point1 ) {
+				controlPoints[0].x = currentMouse.x;
+				controlPoints[0].y = currentMouse.y;
+			} else if ( point2 ) {
+				controlPoints[1].x = currentMouse.x;
+				controlPoints[1].y = currentMouse.y;
+			}
+
+			drawArc(currentMouse.x, currentMouse.y, 5, 'fill');
+			
+			init();
+		}
+	});
+	canvas.addEventListener('mouseup',function(e){
+		drag = false;
+		point1 = false;
+		point2 = false;
+		init();
+	});
+</script>
+</body>
+</html>

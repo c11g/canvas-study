@@ -4,7 +4,6 @@
 	<meta charset="utf-8">
 	<title>이차곡선</title>
 	<link rel="stylesheet" href="css/basic.css">
-	<script src="js/grid.js"></script>
 </head>
 <body>
 	<canvas id="canvas" width="600" height="600">
@@ -13,11 +12,8 @@
 	<h1>이차곡선그리기</h1>
 	<p>quadraticCurveTo(제어점x,제어점y,기준점x,기준점y)</p>
 	<p>현재 패스의 시작점(1)에서 기준점(3)을 연결하는데, 제어점(2)을 보면서 일정한 비율로 곡선을 그린다.</p>
+<script src="js/common.js"></script>
 <script>
-	'use strict';
-	var canvas = document.getElementById('canvas'),
-		context = canvas.getContext('2d');
-
 	// grid
 	drawGrid('rgba(0,0,0,0.1)','#b06f14');
 
@@ -33,18 +29,20 @@
 
 	context.beginPath();
 	context.moveTo(100, 50);
-	context.quadraticCurveTo(100, 150, 200, 150);
+	drawCurveTo(100, 150, 200, 150);
 	context.stroke();
 
-	context.lineWidth = 20;
+	context.lineWidth = 10;
 	context.beginPath();
-	context.moveTo(200, 250);
-	context.quadraticCurveTo(220, 250, 240, 270);
-	context.quadraticCurveTo(260, 370, 290, 280);
-	context.quadraticCurveTo(310, 220, 370, 190);
+	context.moveTo(200, 350);
+	drawCurveTo(220, 350, 240, 370);
+	drawCurveTo(260, 470, 290, 380);
+	drawCurveTo(310, 320, 370, 290);
 	context.stroke();
 
+	// 가이드
 	context.shadowColor = 'rgba(255,255,255,0)';
+
 	context.beginPath();
 	context.arc(100,50,3,0,2*Math.PI);
 	context.fill();
@@ -59,6 +57,41 @@
 	context.arc(200,150,3,0,2*Math.PI);
 	context.fill();
 	context.fillText('(3) 기준점',210,150);
+
+	context.beginPath();
+	context.arc(200,350,2,0,2*Math.PI);
+	context.fill();
+	context.fillText('시작점',160,350);
+
+	context.beginPath();
+	context.arc(220,350,2,0,2*Math.PI);
+	context.fill();
+	context.fillText('제어점',220,345);
+	
+	context.beginPath();
+	context.arc(240,370,2,0,2*Math.PI);
+	context.fill();
+	context.fillText('기준점(시작점)',175,385);
+
+	context.beginPath();
+	context.arc(260,470,2,0,2*Math.PI);
+	context.fill();
+	context.fillText('제어점',260,470);
+	
+	context.beginPath();
+	context.arc(290,380,2,0,2*Math.PI);
+	context.fill();
+	context.fillText('기준점(시작점)',300,385);
+
+	context.beginPath();
+	context.arc(310,320,2,0,2*Math.PI);
+	context.fill();
+	context.fillText('제어점',305,315);
+	
+	context.beginPath();
+	context.arc(370,290,2,0,2*Math.PI);
+	context.fill();
+	context.fillText('기준점',375,290);
 	
 </script>
 </body>
