@@ -9,26 +9,39 @@
 		padding:0;
 		background-color:#ddd;
 	}
+	.canvas-wrap{
+		position:relative;
+		width:1200px;
+	}
 	#canvas{
 		background-color:#fff;
+		cursor: pointer;
+	}
+	#showHistory{
+		position:absolute;
+		top:0;
+		right:0;
 	}
 	</style>
 </head>
 <body>
-	<canvas id="canvas" width="1200" height="1200">
-		캔버스를 지원하지 않습니다.
-	</canvas>
+	<div class="canvas-wrap">
+		<canvas id="canvas" width="1200" height="950">
+			캔버스를 지원하지 않습니다.
+		</canvas>
+		<button type="button" id="showHistory">히스토리보기</button>
+	</div>
 <script src="js/common.js"></script>
 <script>
 	var badukSetting = {
 		'boardColor': '#f0c964',
 		'lineColor': '#000',
-		'columnGap': 50,
+		'columnGap': 48,
 		'margin': 20,
-		'padding': 20
-	}
-	function init(){
-		drawBadukBoard();
+		'padding': 25,
+		'turn': 'black',
+		'historyCoordinate': [],
+		'historyToggle': 'off'
 	}
 	function drawBadukBoard(){
 		// 바둑판 스타일
@@ -72,7 +85,7 @@
 		}
 		context.stroke();
 
-		context.fillStyle = '#000';
+		context.fillStyle = '#111';
 		context.shadowColor = 'rgba(255, 255, 255, 0)';
 		context.beginPath();
 
@@ -84,7 +97,84 @@
 			idX += 6;
 		}
 	}
+	function drawBadukStone(x, y){
+		context.fillStyle = badukSetting['turn'];
+		badukSetting['turn'] = ( badukSetting['turn'] === 'black' ) ? 'white' : 'black';
+		
+		context.shadowColor = 'rgba(0, 0, 0, 0.6)';
+		context.shadowOffsetY = 0;
+		context.shadowOffsetX = 0;
+		context.shadowBlur = 10;
+		
+		context.beginPath();
+		context.arc(x, y, 23, 0, 2*Math.PI);
+		context.fill();
+
+		badukSetting['historyCoordinate'].push(revisionCoordinate);
+	}
+	function showHistory(){
+		saveSurface();
+
+		badukSetting['historyToggle'] = 'on';
+
+		context.font = '15px Arial';
+		context.textAlign = 'center';
+		context.textBaseline = 'middle';
+
+		for ( var index in badukSetting['historyCoordinate'] ) {
+			context.fillStyle = ( context.getImageData(badukSetting['historyCoordinate'][index].x, badukSetting['historyCoordinate'][index].y, 1, 1).data[0] === 0 )
+				? 'white'
+				: 'black';
+			context.fillText( parseInt(index) + 1, badukSetting['historyCoordinate'][index].x, badukSetting['historyCoordinate'][index].y );
+		}
+	}
+
+	function init(){
+		context.clearRect(0, 0, canvas.width, canvas.height);
+		drawBadukBoard();
+		saveSurface();
+	}
+
+
+
+	
+	// 초기화
 	init();
+	
+	var revisionCoordinate, clickDisbleConditions;
+
+	canvas.onmousedown = function(event){
+		saveSurface();
+		revisionCoordinate = {
+			'x': ( badukSetting['margin'] + badukSetting['padding'] ) + badukSetting['columnGap'] * ( Math.round( event.clientX / badukSetting['columnGap'] ) - 1),
+			'y': ( badukSetting['margin'] + badukSetting['padding'] ) + badukSetting['columnGap'] * ( Math.round( event.clientY / badukSetting['columnGap'] ) - 1)
+		}
+		
+		clickDisbleConditions = event.clientX < badukSetting['margin'] + badukSetting['padding'] ||
+								event.clientY > badukSetting['columnGap'] * 19 ||
+		 						event.clientX < badukSetting['margin'] + badukSetting['padding'] ||
+		 						event.clientY > badukSetting['columnGap'] * 19 ||
+								context.getImageData(revisionCoordinate.x, revisionCoordinate.y, 1, 1).data[0] === 0 ||
+								context.getImageData(revisionCoordinate.x, revisionCoordinate.y, 1, 1).data[0] === 255 ||
+								badukSetting['historyToggle'] === 'on';
+
+		if ( !clickDisbleConditions ) {
+			drawBadukStone(revisionCoordinate.x, revisionCoordinate.y);
+		}
+	}
+
+
+
+	// 히스토리 버튼
+	document.getElementById('showHistory').onclick = function(){
+		if ( badukSetting['historyToggle'] === 'off' ) {
+			showHistory();
+		} else {
+			badukSetting['historyToggle'] = 'off';
+			restoreSurface();
+		}
+	}
+
 </script>
 </body>
 </html>
