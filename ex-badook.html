@@ -117,6 +117,10 @@
 	}
 	// 바둑돌 그리기
 	function drawBadukStone(x, y, moving){
+
+		x = coordinate.revisionX;
+		y = coordinate.revisionY;
+
 		context.shadowColor = 'rgba(0, 0, 0, 0.6)';
 		context.shadowOffsetY = 0;
 		context.shadowOffsetX = 0;
@@ -150,17 +154,19 @@
 		context.textBaseline = 'middle';
 
 		for ( var index in badukSetting['historyCoordinate'] ) {
-			context.fillStyle = ( context.getImageData(badukSetting['historyCoordinate'][index].x, badukSetting['historyCoordinate'][index].y, 1, 1).data[0] === 0 )
+			context.fillStyle = ( context.getImageData(badukSetting['historyCoordinate'][index].revisionX, badukSetting['historyCoordinate'][index].revisionY, 1, 1).data[0] === 0 )
 				? 'white'
 				: 'black';
-			context.fillText( parseInt(index) + 1, badukSetting['historyCoordinate'][index].x, badukSetting['historyCoordinate'][index].y );
+			context.fillText( parseInt(index) + 1, badukSetting['historyCoordinate'][index].revisionX, badukSetting['historyCoordinate'][index].revisionY );
 		}
 	}
 	// 바둑판 좌표 받기
 	function window2board(event){
 		return {
-			'x': ( badukSetting['margin'] + badukSetting['padding'] ) + badukSetting['columnGap'] * ( Math.round( event.clientX / badukSetting['columnGap'] ) - 1),
-			'y': ( badukSetting['margin'] + badukSetting['padding'] ) + badukSetting['columnGap'] * ( Math.round( event.clientY / badukSetting['columnGap'] ) - 1)
+			'revisionX': ( badukSetting['margin'] + badukSetting['padding'] ) + ( Math.round( event.clientX / badukSetting['columnGap'] ) - 1 ) * badukSetting['columnGap'],
+			'revisionY': ( badukSetting['margin'] + badukSetting['padding'] ) + ( Math.round( event.clientY / badukSetting['columnGap'] ) - 1 ) * badukSetting['columnGap'],
+			'simpleX': Math.round( event.clientX / badukSetting['columnGap'] ),
+			'simpleY': Math.round( event.clientY / badukSetting['columnGap'] )
 		}
 	}
 	// 무르기 저장
@@ -180,31 +186,26 @@
 
 		badukSetting['historyCoordinate'].pop();
 	}
-	function distinctionWinner(){
-		
-		var _baseX = revisionCoordinate.x;
+	function distinctionWinner(turn){
+		var _x = coordinate.simpleX,
+			_y = coordinate.simpleY;
 
-		var _color = context.getImageData(revisionCoordinate.x, revisionCoordinate.y, 1, 1).data[0];
-		
-		// for ( var i = 0; i < 5; ) {
-			
-		// 	if ( _color === (context.getImageData( _baseX, revisionCoordinate.y, 1, 1).data[0]) ) {
-		// 		i++;
-		// 		console.log('ok');
-		// 	}
-		// }
+		var _color = ( context.getImageData(coordinate.revisionX, coordinate.revisionY, 1, 1).data[0] === 0 ) ? 'black' : 'white';
 
-		var i = 0;
-		do {
-			_baseX += badukSetting['columnGap'];
-			if ( _color === (context.getImageData( _baseX, revisionCoordinate.y, 1, 1).data[0]) ) {
-				i++;
+		console.log(turn);
+		var _arr = [];
+		for ( var index in badukSetting['historyCoordinate'] ) {
+			if ( badukSetting['historyCoordinate'][index].side === turn ) {
+				_arr.push(badukSetting['historyCoordinate'][index]['simpleX']);
 			}
-		} while ( i > 0 || i === 5);
-		
-		if ( i === 5 ){
-			console.log('win');
 		}
+		
+
+		// 정렬
+		// _arr.sort(function(a, b){return a-b});
+		console.log(_arr);
+
+		
 	}
 	// 초기화
 	function init(){
@@ -213,36 +214,35 @@
 		saveSurface();
 	}
 
-	var clickDisbleConditions, revisionCoordinate, unDoUrl, unDoCheck;
+	var clickDisbleConditions, coordinate, unDoUrl, unDoCheck;
 
 	canvas.onmousemove = function(event){
-		revisionCoordinate = window2board(event);
-		clickDisbleConditions = revisionCoordinate.x < badukSetting['margin'] + badukSetting['padding'] ||
-								revisionCoordinate.y > badukSetting['columnGap'] * 19 ||
-								revisionCoordinate.x < badukSetting['margin'] + badukSetting['padding'] ||
-								revisionCoordinate.y > badukSetting['columnGap'] * 19 ||
-								context.getImageData(revisionCoordinate.x, revisionCoordinate.y, 1, 1).data[0] === 0 ||
-								context.getImageData(revisionCoordinate.x, revisionCoordinate.y, 1, 1).data[0] === 255 ||
+		coordinate = window2board(event);
+		clickDisbleConditions = coordinate.simpleX < 1 || coordinate.simpleX > 19 || coordinate.simpleY < 1 || coordinate.simpleY > 19 ||
+								context.getImageData(coordinate.revisionX, coordinate.revisionY, 1, 1).data[0] === 0 ||
+								context.getImageData(coordinate.revisionX, coordinate.revisionY, 1, 1).data[0] === 255 ||
 								badukSetting['historyToggle'] === 'on';
 
 		if ( badukSetting['historyToggle'] === 'off' && !clickDisbleConditions ) {
 			restoreSurface();
-			drawBadukStone(revisionCoordinate.x, revisionCoordinate.y, true);
+			drawBadukStone(coordinate.simpleX, coordinate.simpleY, true);
 		}
 	}
 
 	canvas.onmouseup = function(event){
 		if ( badukSetting['historyToggle'] === 'off' && !clickDisbleConditions ) {
+			coordinate = window2board(event);
 			restoreSurface();
 			saveUndo();
-			drawBadukStone(revisionCoordinate.x, revisionCoordinate.y);
-			revisionCoordinate.side = badukSetting['turn'];
-			badukSetting['historyCoordinate'].push(revisionCoordinate);
+			drawBadukStone(coordinate.simpleX, coordinate.simpleY);
+			coordinate.side = badukSetting['turn'];
+			badukSetting['historyCoordinate'].push(coordinate);
 			unDoCheck = false;
 			saveSurface();
+			
+			distinctionWinner(badukSetting['turn']);
+			
 			getTurn();
-
-			distinctionWinner();
 		}
 	}
 
