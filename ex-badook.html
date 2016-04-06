@@ -137,9 +137,7 @@
 	}
 	// 턴 확인하기
 	function getTurn(type){
-		
 		badukSetting['turn'] = ( badukSetting['turn'] === 'white' ) ? 'black' : 'white';
-		
 	}
 	// 히스토리 보기
 	function showHistory(){
@@ -182,6 +180,32 @@
 
 		badukSetting['historyCoordinate'].pop();
 	}
+	function distinctionWinner(){
+		
+		var _baseX = revisionCoordinate.x;
+
+		var _color = context.getImageData(revisionCoordinate.x, revisionCoordinate.y, 1, 1).data[0];
+		
+		// for ( var i = 0; i < 5; ) {
+			
+		// 	if ( _color === (context.getImageData( _baseX, revisionCoordinate.y, 1, 1).data[0]) ) {
+		// 		i++;
+		// 		console.log('ok');
+		// 	}
+		// }
+
+		var i = 0;
+		do {
+			_baseX += badukSetting['columnGap'];
+			if ( _color === (context.getImageData( _baseX, revisionCoordinate.y, 1, 1).data[0]) ) {
+				i++;
+			}
+		} while ( i > 0 || i === 5);
+		
+		if ( i === 5 ){
+			console.log('win');
+		}
+	}
 	// 초기화
 	function init(){
 		context.clearRect(0, 0, canvas.width, canvas.height);
@@ -205,19 +229,23 @@
 			restoreSurface();
 			drawBadukStone(revisionCoordinate.x, revisionCoordinate.y, true);
 		}
-
 	}
+
 	canvas.onmouseup = function(event){
 		if ( badukSetting['historyToggle'] === 'off' && !clickDisbleConditions ) {
 			restoreSurface();
 			saveUndo();
 			drawBadukStone(revisionCoordinate.x, revisionCoordinate.y);
+			revisionCoordinate.side = badukSetting['turn'];
 			badukSetting['historyCoordinate'].push(revisionCoordinate);
 			unDoCheck = false;
 			saveSurface();
 			getTurn();
+
+			distinctionWinner();
 		}
 	}
+
 	// 히스토리
 	document.getElementById('showHistory').onclick = function(){
 		restoreSurface();
@@ -231,6 +259,7 @@
 			restoreSurface();
 		}
 	}
+
 	// 무르기
 	document.getElementById('unDo').onclick = function(){
 		if( badukSetting['historyToggle'] === 'off' && !unDoCheck ){
