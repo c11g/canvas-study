@@ -138,6 +138,10 @@ document.getElementById('showHistory').onclick = function(){
 document.getElementById('unDo').onclick = function(){
 	// 히스토리 모드가 아니고, 무르기를 한 상태가 아니고, 첫 수가 아니라면 실행
 	if( option.historyMode === 'off' && option.unDoCheck === false && option.historyCoordinate[0] !== undefined ){
+		// 게임 결과창 다시 원복
+		document.getElementById('result').style.backgroundColor = '#777';
+		document.getElementById('result').style.color = '#fff'
+		document.getElementById('winColor').innerHTML = '?';
 		// 게임엔드 상태라면 다시 이전으로 돌리기
 		option.gameEnd = false;
 		// 턴 체인지
