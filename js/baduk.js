@@ -151,6 +151,11 @@ document.getElementById('unDo').onclick = function(){
 	}
 }
 
+// 새로시작
+document.getElementById('newGame').onclick = function(){
+	init();
+}
+
 /* 함수 리스트
 	바둑판 그리기: drawBadukBoard
 	바둑돌 그리기: drawBadukStone
@@ -166,6 +171,15 @@ document.getElementById('unDo').onclick = function(){
 
 // 초기화
 function init(){
+	// 옵션 초기화
+	option.coordinate = {};
+	option.historyCoordinate = [];
+	option.unDoUrl = '';
+	option.historyMode = 'off';
+	option.unDoCheck = false;
+	option.gameEnd = false;
+	option.clickDisble = false;
+	
 	// 캔버스 지우기
 	context.clearRect(0, 0, canvas.width, canvas.height);
 	// 바둑판 그리기

@@ -1,42 +1,44 @@
 @charset "utf-8";
-body{
-	margin:0;
-	padding:0;
+body {
+  margin: 0;
+  padding: 0;
 }
-.canvas-wrap{
-	position:relative;
-	width:1200px;
+.canvas-wrap {
+  position: relative;
+  width: 1200px;
 }
-#canvas{
-	background-color:#777;
-	cursor:pointer;
+#canvas {
+  background-color: #777;
+  cursor: pointer;
 }
-.panel{
-	position:absolute;
-	top:20px;
-	right:50px;
-	width:150px;
+.panel {
+  position: absolute;
+  top: 20px;
+  right: 50px;
+  width: 150px;
+  text-align: center;
 }
-.button-group button{
-	display:block;
-	margin-bottom:10px;
-	width:100%;
-	padding:10px;
-	border:1px solid #ccc;
-	font-size:13px;
-	line-height:20px;
-	background-color:#eee;
-	cursor: pointer;
+.panel button {
+  display: block;
+  margin-bottom: 10px;
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  font-size: 13px;
+  line-height: 20px;
+  background-color: #eee;
+  cursor: pointer;
 }
-#showHistory.on{
-	background-color:#219717;
-	color:#fff;
+#showHistory.on {
+  background-color: #219717;
+  color: #fff;
 }
-#result{
-	height:150px;
-	line-height:130px;
-	font-size:80px;
-	font-weight:600;
-	text-align:center;
-	color:#ffffff;
+#result {
+  height: 150px;
+  line-height: 130px;
+  font-size: 80px;
+  font-weight: 600;
+  text-align: center;
+  color: #ffffff;
 }
+/*# sourceMappingURL=baduk.css.map */
