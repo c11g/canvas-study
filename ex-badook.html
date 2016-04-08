@@ -154,7 +154,7 @@
 		context.textBaseline = 'middle';
 
 		for ( var index in badukSetting['historyCoordinate'] ) {
-			context.fillStyle = ( context.getImageData(badukSetting['historyCoordinate'][index].revisionX, badukSetting['historyCoordinate'][index].revisionY, 1, 1).data[0] === 0 )
+			context.fillStyle = ( getColor(badukSetting['historyCoordinate'][index].revisionX, badukSetting['historyCoordinate'][index].revisionY) === 0 )
 				? 'white'
 				: 'black';
 			context.fillText( parseInt(index) + 1, badukSetting['historyCoordinate'][index].revisionX, badukSetting['historyCoordinate'][index].revisionY );
@@ -186,25 +186,91 @@
 
 		badukSetting['historyCoordinate'].pop();
 	}
+	// color 구하기
+	function getColor(x, y){
+		return context.getImageData(x, y, 1, 1).data[0];
+	}
+
 	function distinctionWinner(turn){
 		var _x = coordinate.simpleX,
 			_y = coordinate.simpleY;
 
-		var _color = ( context.getImageData(coordinate.revisionX, coordinate.revisionY, 1, 1).data[0] === 0 ) ? 'black' : 'white';
+		var _arr1 = [],
+			_arr2 = [],
+			_arr3 = [],
+			_arr4 = [];
 
-		console.log(turn);
-		var _arr = [];
-		for ( var index in badukSetting['historyCoordinate'] ) {
-			if ( badukSetting['historyCoordinate'][index].side === turn ) {
-				_arr.push(badukSetting['historyCoordinate'][index]['simpleX']);
+		for ( var i in badukSetting['historyCoordinate'] ) {
+			// 턴에 맞는 돌만 검색
+			if ( badukSetting['historyCoordinate'][i].side === turn ) {
+				// x축이 같을때 y좌표 뽑기 = _arr1
+				if ( _x === badukSetting['historyCoordinate'][i].simpleX ) {
+					_arr1.push(badukSetting['historyCoordinate'][i].simpleY);
+					_arr1.sort(function(a, b){return a-b});
+				}
+				// y축이 같을때 X좌표 뽑기 = _arr2
+				if ( _y === badukSetting['historyCoordinate'][i].simpleY ) {
+					_arr2.push(badukSetting['historyCoordinate'][i].simpleX);
+					_arr2.sort(function(a, b){return a-b});
+				}
+				// 좌상우하 대각선 = _arr3
+				if ( _x - _y === badukSetting['historyCoordinate'][i].simpleX - badukSetting['historyCoordinate'][i].simpleY ){
+					_arr3.push([badukSetting['historyCoordinate'][i].simpleX, badukSetting['historyCoordinate'][i].simpleY]);
+				}
+				// 좌하우상 대각선 = _arr4
+				if ( _x + _y === badukSetting['historyCoordinate'][i].simpleX + badukSetting['historyCoordinate'][i].simpleY ){
+					_arr4.push([badukSetting['historyCoordinate'][i].simpleX, badukSetting['historyCoordinate'][i].simpleY]);
+				}
+			}
+		}
+
+		var arr1 = [],
+			arr2 = [],
+			arr3 = [],
+			arr4 = [];		
+		
+		console.log('세로좌표:', _arr1);
+		
+		for ( var i = 0; i < 19; i++ ) {
+			if ( _arr1.indexOf(i) !== -1 ){
+				arr1.push(1);
+			} else {
+				arr1.push(0);
 			}
 		}
 		
 
-		// 정렬
-		// _arr.sort(function(a, b){return a-b});
-		console.log(_arr);
+		console.log('세로좌표:', arr1);
+		// console.log('가로좌표:', _arr2);
+		// console.log('정대각좌표:', _arr3);
+		// console.log('반대각좌표:', _arr4);
+		// console.log('클릭좌표라인', _arr);
+	
 
+
+
+		// var count = [1, 1, 1, 1];
+		// for ( var i = 0; i < 2; i++ ) {
+		// 	for ( var j = 0; j < _arr[i].length; j++ ) {
+		// 		if ( _arr[i][j+1] - _arr[i][j] === 1 ){
+		// 			count[i] += 1;
+		// 			if ( count[i] === 5 && ( _arr[i][j+2] - _arr[i][j+1] !== 1 ) ) {
+		// 				break;
+		// 			}
+		// 		} else {
+		// 			count[i] = 1;
+		// 		}
+		// 	}
+		// }
+	
+		// console.log('카운트: ', count);
+
+		// for ( var index in count ) {
+		// 	if ( count[index] === 5 ) {
+		// 		console.log('win');
+		// 		return true;			
+		// 	}
+		// }
 		
 	}
 	// 초기화
@@ -214,14 +280,13 @@
 		saveSurface();
 	}
 
-	var clickDisbleConditions, coordinate, unDoUrl, unDoCheck;
+	var clickDisbleConditions, coordinate, unDoUrl, unDoCheck, win;
 
 	canvas.onmousemove = function(event){
 		coordinate = window2board(event);
 		clickDisbleConditions = coordinate.simpleX < 1 || coordinate.simpleX > 19 || coordinate.simpleY < 1 || coordinate.simpleY > 19 ||
-								context.getImageData(coordinate.revisionX, coordinate.revisionY, 1, 1).data[0] === 0 ||
-								context.getImageData(coordinate.revisionX, coordinate.revisionY, 1, 1).data[0] === 255 ||
-								badukSetting['historyToggle'] === 'on';
+								getColor(coordinate.revisionX, coordinate.revisionY) === 0 || getColor(coordinate.revisionX, coordinate.revisionY) === 255 ||
+								badukSetting['historyToggle'] === 'on' || win;
 
 		if ( badukSetting['historyToggle'] === 'off' && !clickDisbleConditions ) {
 			restoreSurface();
@@ -240,7 +305,7 @@
 			unDoCheck = false;
 			saveSurface();
 			
-			distinctionWinner(badukSetting['turn']);
+			win = distinctionWinner(badukSetting['turn']);
 			
 			getTurn();
 		}
@@ -263,6 +328,7 @@
 	// 무르기
 	document.getElementById('unDo').onclick = function(){
 		if( badukSetting['historyToggle'] === 'off' && !unDoCheck ){
+			win = false;
 			getTurn();
 			drawUndo();
 		}
