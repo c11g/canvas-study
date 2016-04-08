@@ -56,7 +56,7 @@
 		'columnGap': 48,
 		'margin': 20,
 		'padding': 25,
-		'turn': 'black',
+		'turn': '흑',
 		'historyToggle': 'off',
 		'historyCoordinate': []
 	};
@@ -130,18 +130,18 @@
 		context.arc(x, y, 23, 0, 2*Math.PI);
 		
 		if( !moving ) {
-			context.fillStyle = badukSetting['turn'];
+			context.fillStyle = ( badukSetting['turn'] === '흑' ) ? 'black' : 'white';
 		} else {
 			context.shadowColor = 'rgba(0, 0, 0, 0)';
-			context.fillStyle = ( badukSetting['turn'] === 'black' ) ? 'rgba(0, 0, 0, 0.3)' : 'rgba(255, 255, 255, 0.3)';
-			context.strokeStyle = ( badukSetting['turn'] === 'black' ) ? 'rgba(0, 0, 0, 1)' : 'rgba(255, 255, 255, 1)';
+			context.fillStyle = ( badukSetting['turn'] === '흑' ) ? 'rgba(0, 0, 0, 0.3)' : 'rgba(255, 255, 255, 0.3)';
+			context.strokeStyle = ( badukSetting['turn'] === '흑' ) ? 'rgba(0, 0, 0, 1)' : 'rgba(255, 255, 255, 1)';
 			context.stroke();
 		}
 		context.fill();
 	}
 	// 턴 확인하기
 	function getTurn(type){
-		badukSetting['turn'] = ( badukSetting['turn'] === 'white' ) ? 'black' : 'white';
+		badukSetting['turn'] = ( badukSetting['turn'] === '백' ) ? '흑' : '백';
 	}
 	// 히스토리 보기
 	function showHistory(){
@@ -155,8 +155,8 @@
 
 		for ( var index in badukSetting['historyCoordinate'] ) {
 			context.fillStyle = ( getColor(badukSetting['historyCoordinate'][index].revisionX, badukSetting['historyCoordinate'][index].revisionY) === 0 )
-				? 'white'
-				: 'black';
+				? '백'
+				: '흑';
 			context.fillText( parseInt(index) + 1, badukSetting['historyCoordinate'][index].revisionX, badukSetting['historyCoordinate'][index].revisionY );
 		}
 	}
@@ -195,83 +195,38 @@
 		var _x = coordinate.simpleX,
 			_y = coordinate.simpleY;
 
-		var _arr1 = [],
-			_arr2 = [],
-			_arr3 = [],
-			_arr4 = [];
+		var _arr = [ [], [], [], [] ],
+			_arr1 = [ [], [], [], [] ];
 
-		for ( var i in badukSetting['historyCoordinate'] ) {
-			// 턴에 맞는 돌만 검색
-			if ( badukSetting['historyCoordinate'][i].side === turn ) {
-				// x축이 같을때 y좌표 뽑기 = _arr1
-				if ( _x === badukSetting['historyCoordinate'][i].simpleX ) {
-					_arr1.push(badukSetting['historyCoordinate'][i].simpleY);
-					_arr1.sort(function(a, b){return a-b});
+		for ( var index in badukSetting['historyCoordinate'] ) {
+			if ( badukSetting['historyCoordinate'][index].side === turn ) {
+				if ( _y === badukSetting['historyCoordinate'][index]['simpleY'] ){
+					_arr[0].push(badukSetting['historyCoordinate'][index]['simpleX']);
 				}
-				// y축이 같을때 X좌표 뽑기 = _arr2
-				if ( _y === badukSetting['historyCoordinate'][i].simpleY ) {
-					_arr2.push(badukSetting['historyCoordinate'][i].simpleX);
-					_arr2.sort(function(a, b){return a-b});
+				if ( _x === badukSetting['historyCoordinate'][index]['simpleX'] ){
+					_arr[1].push(badukSetting['historyCoordinate'][index]['simpleY']);
 				}
-				// 좌상우하 대각선 = _arr3
-				if ( _x - _y === badukSetting['historyCoordinate'][i].simpleX - badukSetting['historyCoordinate'][i].simpleY ){
-					_arr3.push([badukSetting['historyCoordinate'][i].simpleX, badukSetting['historyCoordinate'][i].simpleY]);
+				if ( _x - _y === badukSetting['historyCoordinate'][index]['simpleX'] - badukSetting['historyCoordinate'][index]['simpleY'] ){
+					_arr[2].push(badukSetting['historyCoordinate'][index]['simpleX']);
 				}
-				// 좌하우상 대각선 = _arr4
-				if ( _x + _y === badukSetting['historyCoordinate'][i].simpleX + badukSetting['historyCoordinate'][i].simpleY ){
-					_arr4.push([badukSetting['historyCoordinate'][i].simpleX, badukSetting['historyCoordinate'][i].simpleY]);
+				if ( _x + _y === badukSetting['historyCoordinate'][index]['simpleX'] + badukSetting['historyCoordinate'][index]['simpleY'] ){
+					_arr[3].push(badukSetting['historyCoordinate'][index]['simpleX']);
 				}
 			}
 		}
 
-		var arr1 = [],
-			arr2 = [],
-			arr3 = [],
-			arr4 = [];		
-		
-		console.log('세로좌표:', _arr1);
-		
-		for ( var i = 0; i < 19; i++ ) {
-			if ( _arr1.indexOf(i) !== -1 ){
-				arr1.push(1);
-			} else {
-				arr1.push(0);
+		for ( var i = 0; i < _arr.length; i++ ) {
+			for ( var j = 0; j < 19; j++ ) {
+				_arr1[i][j] = ( _arr[i].indexOf(j+1) !== -1 ) ? 1 : 0;
+			}
+			_arr1[i] = _arr1[i].join('');
+		}
+
+		for ( var i = 0; i < _arr1.length; i++ ) {
+			if ( _arr1[i].indexOf('11111') !== -1 && _arr1[i].indexOf('111111') === -1 ) {
+				return true;
 			}
 		}
-		
-
-		console.log('세로좌표:', arr1);
-		// console.log('가로좌표:', _arr2);
-		// console.log('정대각좌표:', _arr3);
-		// console.log('반대각좌표:', _arr4);
-		// console.log('클릭좌표라인', _arr);
-	
-
-
-
-		// var count = [1, 1, 1, 1];
-		// for ( var i = 0; i < 2; i++ ) {
-		// 	for ( var j = 0; j < _arr[i].length; j++ ) {
-		// 		if ( _arr[i][j+1] - _arr[i][j] === 1 ){
-		// 			count[i] += 1;
-		// 			if ( count[i] === 5 && ( _arr[i][j+2] - _arr[i][j+1] !== 1 ) ) {
-		// 				break;
-		// 			}
-		// 		} else {
-		// 			count[i] = 1;
-		// 		}
-		// 	}
-		// }
-	
-		// console.log('카운트: ', count);
-
-		// for ( var index in count ) {
-		// 	if ( count[index] === 5 ) {
-		// 		console.log('win');
-		// 		return true;			
-		// 	}
-		// }
-		
 	}
 	// 초기화
 	function init(){
@@ -280,13 +235,13 @@
 		saveSurface();
 	}
 
-	var clickDisbleConditions, coordinate, unDoUrl, unDoCheck, win;
+	var clickDisbleConditions, coordinate, unDoUrl, unDoCheck, gameEnd = false;
 
 	canvas.onmousemove = function(event){
 		coordinate = window2board(event);
 		clickDisbleConditions = coordinate.simpleX < 1 || coordinate.simpleX > 19 || coordinate.simpleY < 1 || coordinate.simpleY > 19 ||
 								getColor(coordinate.revisionX, coordinate.revisionY) === 0 || getColor(coordinate.revisionX, coordinate.revisionY) === 255 ||
-								badukSetting['historyToggle'] === 'on' || win;
+								badukSetting['historyToggle'] === 'on' || gameEnd;
 
 		if ( badukSetting['historyToggle'] === 'off' && !clickDisbleConditions ) {
 			restoreSurface();
@@ -305,8 +260,12 @@
 			unDoCheck = false;
 			saveSurface();
 			
-			win = distinctionWinner(badukSetting['turn']);
-			
+			gameEnd = distinctionWinner(badukSetting['turn']);
+
+			if ( gameEnd ) {
+				alert(badukSetting['turn'] + '이 승리하셨습니다.');
+			}
+
 			getTurn();
 		}
 	}
@@ -328,9 +287,12 @@
 	// 무르기
 	document.getElementById('unDo').onclick = function(){
 		if( badukSetting['historyToggle'] === 'off' && !unDoCheck ){
-			win = false;
+
+			gameEnd = false;
+
 			getTurn();
 			drawUndo();
+
 		}
 	}
 
