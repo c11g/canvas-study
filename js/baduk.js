@@ -56,11 +56,10 @@ canvas.onmousemove = function(event){
 	// 실행 방지 조건 확인
 	disableConditions();
 
-	// 러버밴드를 위한 이전 화면 띄우고
-	restoreSurface();
-
 	// 히스토리 모드가 아니고, 실행방지가 거짓이면 실행
 	if ( option.historyMode === 'off' && option.clickDisble === false ) {
+		// 러버밴드를 위한 이전 화면 띄우고
+		restoreSurface();
 		// 바둑돌 그리기, 마지막 인수에 true는 러버밴드시에만 들어감(투명도 설정)
 		drawBadukStone(option.coordinate.simpleX, option.coordinate.simpleY, true);
 	}
