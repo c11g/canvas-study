@@ -171,6 +171,7 @@ document.getElementById('newGame').onclick = function(){
 // 초기화
 function init(){
 	// 옵션 초기화
+	option.whoTurn = 1;
 	option.coordinate = {};
 	option.historyCoordinate = [];
 	option.unDoUrl = '';
