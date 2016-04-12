@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+	<meta charset="utf-8">
+	<title>다각형 드래그하기</title>
+	<link rel="stylesheet" href="css/basic.css">
+</head>
+<body>
+	<label for="strokeColor">Stroke Color</label>
+	<select id="strokeColor">
+		<option>orange</option>
+		<option>green</option>
+		<option>pink</option>
+		<option>yellow</option>
+		<option>gray</option>
+	</select>
+	<label for="fillColor">Fill Color</label>
+	<select id="fillColor">
+		<option>orange</option>
+		<option>green</option>
+		<option>pink</option>
+		<option>yellow</option>
+		<option>gray</option>
+	</select>
+	<label for="sides">Sides</label>
+	<select id="sides">
+		<option>5</option>
+		<option>6</option>
+		<option>7</option>
+		<option>8</option>
+		<option>9</option>
+	</select>
+	<label for="startAngle">Start Angle</label>
+	<select id="startAngle">
+		<option>0</option>
+		<option>45</option>
+		<option>90</option>
+		<option>135</option>
+		<option>180</option>
+		<option>225</option>
+		<option>270</option>
+		<option>315</option>
+		<option>360</option>
+	</select>
+	<label for="fill">Fill</label>
+	<input type="checkbox" id="fill">
+	<label for="edit">Edit</label>
+	<input type="checkbox" id="edit">
+	<button type="button" id="erase">Erase all</button>
+	<hr>
+	<canvas id="canvas" width="900" height="700">
+		캔버스를 지원하지 않습니다.
+	</canvas>
+	<h1>다각형 드래그하기</h1>
+	
+<script src="js/common.js"></script>
+<script>
+
+var strokeColor = document.getElementById('strokeColor'),
+	fillColor = document.getElementById('fillColor'),
+	sidesSelect = document.getElementById('sides'),
+	startAngleSelect = document.getElementById('startAngle'),
+	fillCheckbox = document.getElementById('fill'),
+	editCheckbox = document.getElementById('edit'),
+	eraseButton = document.getElementById('erase'),
+
+	mousedown = {},
+	rubberbandRect = {},
+
+	dragging = false,
+	draggingOffsetX,
+	draggingOffsetY,
+
+	sides = 8,
+	startAngle = 0,
+
+	guidewires = true,
+	editing = false,
+	polygons = [];
+
+function drawPolygon(polygon){
+	context.beginPath();
+	polygon.createPath(context);
+	polygon.stroke(context);
+
+	if( fillCheckbox.checked ){
+		polygon.fill(context);
+	}
+}
+
+function updateRubberbandRectangle(loc){
+	rubberbandRect.width = Math.abs(loc.x - mousedown.x);
+	rubberbandRect.height = Math.abs(loc.y - mousedown.y);
+
+	if (loc.x > mousedown.x) {
+		rubberbandRect.left = mousedown.x;
+	} else {
+		rubberbandRect.left = loc.x;
+	}
+	if (loc.y > mousedown.y) {
+		rubberbandRect.top = mousedown.y;
+	} else {
+		rubberbandRect.top = loc.y;
+	}
+}
+
+function drawRubberbandShape(loc, sides, startAngle){
+	var polygon = new Polygon(mousedown.x, mousedown.y, rubberbandRect.width, parseInt(sidesSelect.value), Math.PI / 180 * parseInt(startAngleSelect.value), context.strokeStyle, context.fillStyle, fillCheckbox.checked);
+
+	drawPolygon(polygon);
+	if (!dragging) {
+		polygons.push(polygon);
+	}
+}
+
+function updateRubberband(loc, sides, startAngle){
+	updateRubberbandRectangle(loc);
+	drawRubberbandShape(loc, sides, startAngle);
+}
+
+function drawHorizontalLine(y){
+	context.beginPath();
+	context.moveTo(0, y + 0.5);
+	context.lineTo(canvas.width, y + 0.5);
+	context.stroke();
+}
+
+function drawVerticalLine(x){
+	context.beginPath();
+	context.moveTo(x + 0.5, 0);
+	context.lineTo(x + 0.5, canvas.height);
+	context.stroke();
+}
+
+function drawGuidewires(x, y){
+	context.save();
+	context.strokeStyle = 'rgba(0, 0, 230, 0.4)';
+	context.lineWidth = 0.5;
+	drawVerticalLine(x);
+	drawHorizontalLine(y);
+	context.restore();
+}
+
+function drawPolygons(){
+	polygons.forEach(function(polygon){
+		drawPolygon(polygon);
+	});
+}
+
+function startDragging(loc){
+	saveSurface();
+	mousedown.x = loc.x;
+	mousedown.y = loc.y;
+}
+
+function startEditing(){
+	canvas.style.cursor = 'pointer';
+	editing = true;
+}
+
+function stopEditing(){
+	canvas.style.cursor = 'crosshair';
+	editing = false;
+}
+
+canvas.onmousedown = function(e){
+	var loc = window2canvas(e);
+	e.preventDefault();
+	if(editing){
+		polygons.forEach(function(polygon){
+			polygon.createPath(context);
+			if(context.isPointInPath(loc.x, loc.y)){
+				startDragging(loc);
+				dragging = polygon;
+				draggingOffsetX = loc.x - polygon.x;
+				draggingOffsetY = loc.y - polygon.y;
+				return;
+			}
+		});
+	} else {
+		startDragging(loc);
+		dragging = true;
+	}
+};
+
+canvas.onmousemove = function(e){
+	var loc = window2canvas(e);
+	e.preventDefault();
+	if(editing && dragging){
+		dragging.x = loc.x - draggingOffsetX;
+		dragging.y = loc.y - draggingOffsetY;
+		context.clearRect(0, 0, canvas.width, canvas.height);
+		drawGrid('#c6c6c6','#ff8080');
+		drawPolygons();
+	} else {
+		if(dragging){
+			restoreSurface();
+			updateRubberband(loc, sides, startAngle);
+			if(guidewires){
+				drawGuidewires(mousedown.x, mousedown.y);
+			}
+		}
+	}
+};
+
+canvas.onmouseup = function(e){
+	var loc = window2canvas(e);
+	dragging = false;
+	if(editing){
+
+	} else {
+		restoreSurface();
+		updateRubberband(loc);
+	}
+};
+
+eraseButton.onclick = function(e){
+	context.clearRect(0, 0, canvas.widht, canvas.hegith);
+	drawGrid('#c6c6c6','#ff8080');
+	saveSurface();
+};
+
+strokeColor.onchange = function(e){
+	context.strokeStyle = strokeColor.value;
+};
+
+fillColor.onchange = function(e){
+	context.fillStyle = fillColor.value;
+};
+
+editCheckbox.onchange = function(e){
+	if(editCheckbox.checked){
+		startEditing();
+	} else {
+		stopEditing();
+	}
+};
+
+context.strokeStyle = strokeColor.value;
+context.fillStyle = fillColor.value;
+
+context.shadowColor = 'rgba(0, 0, 0, 0.4)';
+context.shadowOffsetX = 2;
+context.shadowOffsetY = 2;
+context.shadowBlur = 4;
+
+drawGrid('#c6c6c6','#ff8080');
+</script>
+</body>
+</html>

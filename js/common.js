@@ -15,10 +15,17 @@ var canvas = document.getElementById('canvas'),
 
 // grid
 function drawGrid(lineColor, fontColor, spacing){
+	context.save();
 	var gridGap = spacing || 50,
 		numGrid = gridGap / canvas.width,
 		lineColor,
 		fontColor;
+
+	// shadow 없애기
+	context.shadowColor = undefined;
+	context.shadowOffsetX = 0;
+	context.shadowOffsetY = 0;
+	context.shadowBlur = 0;
 
 	context.strokeStyle = lineColor;
 	context.fillStyle = fontColor;
@@ -53,6 +60,7 @@ function drawGrid(lineColor, fontColor, spacing){
 			context.fillText(posX + 0.5, posX, 10);
 		}
 	}
+	context.restore();
 }
 
 // x,y 좌표구하기
@@ -62,7 +70,7 @@ function window2canvas(e){
 		offsetleft = canvas.getBoundingClientRect().left;
 
 	return {
-		'x': e.clientX - offsetleft, 'y': e.clientY - offsetleft
+		'x': e.clientX - offsetleft, 'y': e.clientY - offsetTop
 	}
 }
 
@@ -108,3 +116,62 @@ function drawCurveTo(controlPointX1, controlPointY1, controlPointX2, controlPoin
 		context.bezierCurveTo(controlPointX1, controlPointY1, controlPointX2, controlPointY2, finishPointX, finishPointY);
 	}
 }
+
+// 포인트 생성자
+var Point = function (x, y) {
+	this.x = x;
+	this.y = y;
+}
+
+// 다각형 생성자
+var Polygon = function (centerX, centerY, radius, sides, startAngle, strokeStyle, fillStyle, filled) {
+	this.x = centerX;
+	this.y = centerY;
+	this.radius = radius;
+	this.sides = sides;
+	this.startAngle = startAngle;
+	this.strokeStyle = strokeStyle;
+	this.fillStyle = fillStyle;
+	this.filled = filled;
+}
+
+// 다각형 프로토타입
+Polygon.prototype = {
+	getPoints: function(){
+		var points = [],
+			angle = this.startAngle || 0;
+		for ( var i = 0; i < this.sides; i++ ) {
+			points.push( new Point( this.x + this.radius * Math.sin(angle),
+									this.y - this.radius * Math.cos(angle) ) );
+			angle += 2 * Math.PI / this.sides;
+		}
+		return points;
+	},
+	createPath: function(context){
+		var points = this.getPoints();
+		context.beginPath();
+		context.moveTo(points[0].x, points[0].y);
+		for( var i = 1; i < this.sides; i++ ){
+			context.lineTo(points[i].x, points[i].y);
+		}
+		context.closePath();
+	},
+	stroke: function(context){
+		context.save();
+		this.createPath(context);
+		context.strokeStyle = this.strokeStyle;
+		context.stroke();
+		context.restore();
+	},
+	fill: function(context){
+		context.save();
+		this.createPath(context);
+		context.fillStyle = this.fillStyle;
+		context.fill();
+		context.restore();
+	},
+	move: function(x, y){
+		this.x = x;
+		this.y = y;
+	}
+};
