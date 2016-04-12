@@ -51,28 +51,46 @@
 	var drag = false,
 		mousedown = {},
 		currentMouse = {},
-		point1, point2;
+		points={};
 
 	canvas.addEventListener('mousedown',function(e){
 		mousedown = window2canvas(e);
-		if ( mousedown.x > controlPoints[0].x - 5 && mousedown.x < controlPoints[0].x + 5 && mousedown.y > controlPoints[0].y - 5 && mousedown.y < controlPoints[0].y + 5 ) {
-			drag = true;
-			point1 = true;
-		} else if ( mousedown.x > controlPoints[1].x - 5 && mousedown.x < controlPoints[1].x + 5 && mousedown.y > controlPoints[1].y - 5 && mousedown.y < controlPoints[1].y + 5 ) {
-			drag = true;
-			point2 = true;
+		drag = true;
+		switch(true){
+			case ( mousedown.x > controlPoints[0].x - 5 && mousedown.x < controlPoints[0].x + 5 && mousedown.y > controlPoints[0].y - 5 && mousedown.y < controlPoints[0].y + 5 ):
+				points.cp0 = true;
+				break;
+			case ( mousedown.x > controlPoints[1].x - 5 && mousedown.x < controlPoints[1].x + 5 && mousedown.y > controlPoints[1].y - 5 && mousedown.y < controlPoints[1].y + 5 ):
+				points.cp1 = true;
+				break;
+			case ( mousedown.x > endPoints[0].x - 5 && mousedown.x < endPoints[0].x + 5 && mousedown.y > endPoints[0].y - 5 && mousedown.y < endPoints[0].y + 5 ):
+				points.ep0 = true;
+				break;
+			case ( mousedown.x > endPoints[1].x - 5 && mousedown.x < endPoints[1].x + 5 && mousedown.y > endPoints[1].y - 5 && mousedown.y < endPoints[1].y + 5 ):
+				points.ep1 = true;
+				break;
 		}
 	});
 	canvas.addEventListener('mousemove',function(e){
 		if ( drag ) {
 			currentMouse = window2canvas(e);
-
-			if ( point1 ) {
-				controlPoints[0].x = currentMouse.x;
-				controlPoints[0].y = currentMouse.y;
-			} else if ( point2 ) {
-				controlPoints[1].x = currentMouse.x;
-				controlPoints[1].y = currentMouse.y;
+			switch(true){
+				case points.cp0:
+					controlPoints[0].x = currentMouse.x;
+					controlPoints[0].y = currentMouse.y;
+					break;
+				case points.cp1:
+					controlPoints[1].x = currentMouse.x;
+					controlPoints[1].y = currentMouse.y;
+					break;
+				case points.ep0:
+					endPoints[0].x = currentMouse.x;
+					endPoints[0].y = currentMouse.y;
+					break;
+				case points.ep1:
+					endPoints[1].x = currentMouse.x;
+					endPoints[1].y = currentMouse.y;
+					break;
 			}
 
 			drawArc(currentMouse.x, currentMouse.y, 5, 'fill');
@@ -82,8 +100,7 @@
 	});
 	canvas.addEventListener('mouseup',function(e){
 		drag = false;
-		point1 = false;
-		point2 = false;
+		points = {};
 		init();
 	});
 </script>
